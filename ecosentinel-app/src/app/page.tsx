@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { motion, AnimatePresence, useInView, type Variants } from 'framer-motion';
 import {
   Shield, Activity, Brain, Cpu, Radio, FileText,
   Droplets, Flame, Wind, ChevronRight, ArrowRight,
@@ -14,21 +14,21 @@ import {
 import Link from 'next/link';
 
 /* ─── Shared Animation Variants ─── */
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 28 },
   visible: (i: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: i * 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
 
-const scaleIn = {
+const scaleIn: Variants = {
   hidden: { opacity: 0, scale: 0.92 },
   visible: (i: number = 0) => ({
     opacity: 1,
     scale: 1,
-    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
 
@@ -193,7 +193,7 @@ function LandingNav({ onOpenDemo }: { onOpenDemo: () => void }) {
           : 'bg-transparent py-5'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between">
         
         {/* Brand */}
         <Link href="#hero" className="flex items-center gap-3 group focus-visible:ring-2 focus-visible:ring-primary-400 rounded-xl p-1">
@@ -272,7 +272,7 @@ function LandingNav({ onOpenDemo }: { onOpenDemo: () => void }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-surface-950/98 backdrop-blur-2xl border-b border-white/10 px-4 pt-3 pb-6 space-y-2"
+            className="lg:hidden bg-surface-950/98 backdrop-blur-2xl border-b border-white/10 px-6 pt-3 pb-6 space-y-2"
           >
             {navLinks.map((link) => (
               <a
@@ -321,15 +321,15 @@ function LandingNav({ onOpenDemo }: { onOpenDemo: () => void }) {
    ═══════════════════════════════════════════ */
 function HeroSection({ onOpenDemo }: { onOpenDemo: () => void }) {
   return (
-    <section id="hero" className="relative min-h-screen pt-32 pb-24 lg:pt-40 lg:pb-36 flex items-center overflow-hidden bg-gradient-to-b from-[#020617] via-[#0b1329] to-[#0f172a]">
+    <section id="hero" className="relative min-h-screen pt-32 pb-24 lg:pt-36 lg:pb-28 flex items-center overflow-hidden bg-gradient-to-b from-[#020617] via-[#0b1329] to-[#0f172a]">
       
       {/* Ambient Radial Background Glows */}
       <ParticleField />
       <div className="absolute top-0 right-1/4 w-[700px] h-[500px] bg-gradient-radial from-primary-600/15 via-transparent to-transparent pointer-events-none" />
       <div className="absolute bottom-0 left-10 w-[600px] h-[400px] bg-gradient-radial from-secondary-500/10 via-transparent to-transparent pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
+      <div className="relative z-10 max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: Headline, Subtitle, CTAs */}
           <motion.div
@@ -351,7 +351,7 @@ function HeroSection({ onOpenDemo }: { onOpenDemo: () => void }) {
 
             {/* Main Headline */}
             <h1
-              className="text-4xl sm:text-6xl lg:text-[4rem] font-extrabold text-white tracking-tight leading-[1.08]"
+              className="text-4xl sm:text-6xl lg:text-[4rem] font-extrabold text-white tracking-tight leading-[1.08] mb-6"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               Predict. Protect.{' '}
@@ -362,13 +362,13 @@ function HeroSection({ onOpenDemo }: { onOpenDemo: () => void }) {
             </h1>
 
             {/* Subtitle */}
-            <p className="mt-6 text-base sm:text-xl text-white/65 leading-relaxed font-normal max-w-2xl">
+            <p className="text-base sm:text-xl text-white/65 leading-relaxed font-normal max-w-2xl">
               EcoSentinel AI unifies solar IoT telemetry and edge AI models to detect floods, wildfires, and toxic air pollution{' '}
               <strong className="text-white font-semibold">hours before disasters strike</strong>.
             </p>
 
             {/* Action Buttons */}
-            <div className="mt-9 flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-stretch sm:items-center">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-stretch sm:items-center">
               <Link
                 href="/dashboard"
                 className="group relative inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-2xl text-base font-bold text-white bg-gradient-to-r from-primary-600 to-secondary-600 shadow-xl shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden focus-visible:ring-2 focus-visible:ring-primary-400"
@@ -417,13 +417,13 @@ function HeroSection({ onOpenDemo }: { onOpenDemo: () => void }) {
             <div className="relative mx-auto max-w-md lg:max-w-none">
               
               {/* Outer Glow Ring */}
-              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary-500/20 via-secondary-500/20 to-success-500/20 blur-xl opacity-75 animate-pulse" />
+              <div className="absolute -inset-4 rounded-2xl bg-gradient-to-r from-primary-500/20 via-secondary-500/20 to-success-500/20 blur-xl opacity-75 animate-pulse" />
 
               {/* Main Card Container */}
-              <div className="relative p-6 sm:p-7 rounded-3xl border border-white/15 bg-surface-950/85 backdrop-blur-2xl shadow-2xl overflow-hidden">
+              <div className="relative p-8 rounded-2xl border border-white/15 bg-surface-950/85 backdrop-blur-2xl shadow-2xl overflow-hidden">
                 
                 {/* Visual Card Header */}
-                <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+                <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
                   <div className="flex items-center gap-2.5">
                     <div className="w-3 h-3 rounded-full bg-critical-500 animate-ping" />
                     <span className="text-xs font-mono font-bold text-white tracking-wider uppercase">Live Threat Radar</span>
@@ -474,7 +474,7 @@ function HeroSection({ onOpenDemo }: { onOpenDemo: () => void }) {
                 </div>
 
                 {/* Telemetry Progress Bar */}
-                <div className="mt-5 space-y-2.5">
+                <div className="mt-6 space-y-2.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-white/60 font-medium">Real-Time Risk Index</span>
                     <span className="text-critical-400 font-bold font-mono">HIGH RISK (84/100)</span>
@@ -514,7 +514,7 @@ function CrisisSection() {
       desc: 'Sudden cloudbursts and river bank breaches submerge entire habitats before traditional weather stations issue warnings.',
       icon: Droplets,
       color: 'from-blue-500 to-cyan-400',
-      bgAccent: 'bg-blue-500/10',
+      bgAccent: 'bg-blue-50/10',
       borderAccent: 'border-blue-500/20 hover:border-blue-400/40',
     },
     {
@@ -524,7 +524,7 @@ function CrisisSection() {
       desc: 'Fires rage undetected for hours in remote dry forests, consuming vegetation and releasing megatons of carbon.',
       icon: Flame,
       color: 'from-orange-500 to-red-500',
-      bgAccent: 'bg-orange-500/10',
+      bgAccent: 'bg-orange-50/10',
       borderAccent: 'border-orange-500/20 hover:border-orange-400/40',
     },
     {
@@ -534,27 +534,27 @@ function CrisisSection() {
       desc: 'Toxic gaseous emissions and particulate surges cause severe respiratory emergencies before local alerts sound.',
       icon: Wind,
       color: 'from-amber-500 to-yellow-400',
-      bgAccent: 'bg-amber-500/10',
+      bgAccent: 'bg-amber-50/10',
       borderAccent: 'border-amber-500/20 hover:border-amber-400/40',
     },
   ];
 
   return (
-    <section id="problem" className="relative py-24 sm:py-32 lg:py-36 bg-surface-50 border-t border-surface-200/60 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="problem" className="relative py-24 lg:py-28 bg-surface-50 border-t border-surface-200/60 overflow-hidden">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12">
         
-        {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+        {/* Section Header: Badge -> 24px -> Title -> 24px -> Desc -> 56px -> Content */}
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-critical-50 border border-critical-200 text-critical-700 text-xs font-bold uppercase tracking-widest mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-critical-50 border border-critical-200 text-critical-700 text-xs font-bold uppercase tracking-widest mb-6"
           >
             <AlertTriangle className="w-3.5 h-3.5" />
             The Climate Reality
           </motion.div>
           <motion.h2
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={1}
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-surface-900 tracking-tight leading-[1.15]"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-surface-900 tracking-tight leading-[1.15] mb-6"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
             Environmental disasters are{' '}
@@ -564,14 +564,14 @@ function CrisisSection() {
           </motion.h2>
           <motion.p
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={2}
-            className="mt-4 text-base sm:text-lg text-surface-600 leading-relaxed max-w-2xl mx-auto"
+            className="text-base sm:text-lg text-surface-600 leading-relaxed max-w-2xl mx-auto"
           >
             Legacy monitoring relies on manual inspections, fragmented networks, and reactive protocols — leaving vulnerable regions unprotected.
           </motion.p>
         </div>
 
-        {/* Disaster Cards Grid (Equal Heights, Aligned Padding) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16 lg:mb-20 items-stretch">
+        {/* Disaster Cards Grid: Desktop 3-col, Tablet 2-col, Mobile 1-col, Equal Heights, p-8 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-14 items-stretch">
           {crises.map((c, i) => (
             <motion.div
               key={c.title}
@@ -580,11 +580,11 @@ function CrisisSection() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeUp}
-              className={`group flex flex-col justify-between p-8 sm:p-9 rounded-3xl border ${c.borderAccent} bg-white shadow-sm hover:shadow-xl transition-all duration-300 h-full`}
+              className={`group flex flex-col justify-between p-8 rounded-2xl border ${c.borderAccent} bg-white shadow-sm hover:shadow-xl transition-all duration-300 h-full`}
             >
               <div>
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${c.color} flex items-center justify-center text-white mb-6 shadow-md group-hover:scale-105 transition-transform`}>
-                  <c.icon className="w-7 h-7" />
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${c.color} flex items-center justify-center text-white mb-6 shadow-md group-hover:scale-105 transition-transform`}>
+                  <c.icon className="w-6 h-6" />
                 </div>
                 <div className="mb-4">
                   <span className={`text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${c.color}`} style={{ fontFamily: 'var(--font-heading)' }}>
@@ -601,18 +601,18 @@ function CrisisSection() {
           ))}
         </div>
 
-        {/* Redesigned Standalone Statistics Section */}
+        {/* Standalone Statistics Section: Equal Column Widths, Equal Top/Bottom Padding, Contained */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeUp}
-          className="p-8 sm:p-12 rounded-3xl bg-surface-950 text-white shadow-2xl border border-white/10 relative overflow-hidden"
+          className="p-8 sm:p-10 rounded-2xl bg-surface-950 text-white shadow-2xl border border-white/10 relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 md:divide-x divide-white/10 text-center items-center">
             
-            <div ref={stat1.ref} className="md:px-8 py-4 md:py-0">
+            <div ref={stat1.ref} className="md:px-8 py-2">
               <div className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-critical-400 to-orange-400" style={{ fontFamily: 'var(--font-heading)' }}>
                 {stat1.count}M+
               </div>
@@ -621,7 +621,7 @@ function CrisisSection() {
               </div>
             </div>
 
-            <div ref={stat2.ref} className="md:px-8 py-4 md:py-0">
+            <div ref={stat2.ref} className="md:px-8 py-2">
               <div className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-400" style={{ fontFamily: 'var(--font-heading)' }}>
                 ${stat2.count}B
               </div>
@@ -630,7 +630,7 @@ function CrisisSection() {
               </div>
             </div>
 
-            <div ref={stat3.ref} className="md:px-8 py-4 md:py-0">
+            <div ref={stat3.ref} className="md:px-8 py-2">
               <div className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-400" style={{ fontFamily: 'var(--font-heading)' }}>
                 {stat3.count}.2M
               </div>
@@ -661,20 +661,21 @@ function SolutionSection() {
   ];
 
   return (
-    <section id="solution" className="relative py-24 sm:py-32 lg:py-36 bg-white border-t border-surface-200/60 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="solution" className="relative py-24 lg:py-28 bg-white border-t border-surface-200/60 overflow-hidden">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12">
         
-        <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+        {/* Section Header: Badge -> 24px -> Title -> 24px -> Desc -> 56px -> Content */}
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 text-xs font-bold uppercase tracking-widest mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 text-xs font-bold uppercase tracking-widest mb-6"
           >
             <Workflow className="w-3.5 h-3.5" />
             End-to-End Pipeline
           </motion.div>
           <motion.h2
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={1}
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-surface-900 tracking-tight leading-[1.15]"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-surface-900 tracking-tight leading-[1.15] mb-6"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
             From raw sensor telemetry to{' '}
@@ -684,13 +685,14 @@ function SolutionSection() {
           </motion.h2>
           <motion.p
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={2}
-            className="mt-4 text-base sm:text-lg text-surface-600 leading-relaxed max-w-2xl mx-auto"
+            className="text-base sm:text-lg text-surface-600 leading-relaxed max-w-2xl mx-auto"
           >
             A resilient six-stage architecture engineered for real-time risk assessment and automated dispatch.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+        {/* Pipeline Cards Grid: 3-column desktop, 2-column tablet, 1-column mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
           {steps.map((s, i) => (
             <motion.div
               key={s.num}
@@ -699,14 +701,14 @@ function SolutionSection() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeUp}
-              className="group relative p-8 sm:p-9 rounded-3xl border border-surface-200 bg-white hover:bg-surface-50/50 hover:border-surface-300 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full"
+              className="group relative p-8 rounded-2xl border border-surface-200 bg-white hover:bg-surface-50/50 hover:border-surface-300 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full"
             >
               <div className="absolute top-6 right-6 text-5xl font-black text-surface-100 group-hover:text-surface-200/80 transition-colors select-none pointer-events-none font-mono">
                 {s.num}
               </div>
 
               <div>
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white mb-6 shadow-md group-hover:scale-105 transition-transform`}>
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white mb-6 shadow-md group-hover:scale-105 transition-transform`}>
                   <s.icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-bold text-surface-900 mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
@@ -736,13 +738,14 @@ function ComparisonSection() {
   ];
 
   return (
-    <section className="relative py-24 sm:py-32 lg:py-36 bg-surface-50 border-t border-surface-200/60 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative py-24 lg:py-28 bg-surface-50 border-t border-surface-200/60 overflow-hidden">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12">
         
-        <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+        {/* Section Header: 64px gap to cards */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-50 border border-secondary-200 text-secondary-700 text-xs font-bold uppercase tracking-widest mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-50 border border-secondary-200 text-secondary-700 text-xs font-bold uppercase tracking-widest mb-6"
           >
             <BarChart3 className="w-3.5 h-3.5" />
             Comparison Matrix
@@ -756,6 +759,7 @@ function ComparisonSection() {
           </motion.h2>
         </div>
 
+        {/* Comparison Rows */}
         <div className="max-w-5xl mx-auto space-y-4">
           {rows.map((row, i) => (
             <motion.div
@@ -765,7 +769,7 @@ function ComparisonSection() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeUp}
-              className="p-6 sm:p-7 rounded-2xl bg-white border border-surface-200 hover:border-primary-300 hover:shadow-lg transition-all duration-300"
+              className="p-8 rounded-2xl bg-white border border-surface-200 hover:border-primary-300 hover:shadow-lg transition-all duration-300"
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
                 <div className="md:w-52 flex-shrink-0">
@@ -826,13 +830,14 @@ function FeaturesSection() {
   ];
 
   return (
-    <section id="features" className="relative py-24 sm:py-32 lg:py-36 bg-white border-t border-surface-200/60 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="features" className="relative py-24 lg:py-28 bg-white border-t border-surface-200/60 overflow-hidden">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12">
         
-        <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+        {/* Section Header: Badge -> 24px -> Title -> 56px -> Content */}
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 text-xs font-bold uppercase tracking-widest mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 text-xs font-bold uppercase tracking-widest mb-6"
           >
             <Sparkles className="w-3.5 h-3.5" />
             Platform Capabilities
@@ -846,7 +851,8 @@ function FeaturesSection() {
           </motion.h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        {/* Feature Cards Grid: 3-column desktop, 2-column tablet, 1-column mobile, p-8 padding */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
           {features.map((f, i) => (
             <motion.div
               key={f.title}
@@ -855,10 +861,10 @@ function FeaturesSection() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={scaleIn}
-              className="group p-7 rounded-2xl border border-surface-200 bg-white hover:border-primary-200 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full"
+              className="group p-8 rounded-2xl border border-surface-200 bg-white hover:border-primary-200 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full"
             >
               <div>
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${f.gradient} flex items-center justify-center text-white mb-5 shadow-sm group-hover:scale-110 transition-transform`}>
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center text-white mb-6 shadow-sm group-hover:scale-110 transition-transform`}>
                   <f.icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-surface-900 mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
@@ -917,13 +923,14 @@ function IntelligenceSection() {
   const active = cards[activeTab];
 
   return (
-    <section className="relative py-24 sm:py-32 lg:py-36 bg-surface-50 border-t border-surface-200/60 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative py-24 lg:py-28 bg-surface-50 border-t border-surface-200/60 overflow-hidden">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12">
         
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        {/* Section Header: Badge -> 24px -> Title -> 56px -> Content */}
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 text-xs font-bold uppercase tracking-widest mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 text-xs font-bold uppercase tracking-widest mb-6"
           >
             <Brain className="w-3.5 h-3.5" />
             Decision-Assist AI
@@ -938,7 +945,7 @@ function IntelligenceSection() {
         </div>
 
         {/* Tab Selection */}
-        <div className="flex flex-wrap justify-center items-center gap-3 mb-12">
+        <div className="flex flex-wrap justify-center items-center gap-3 mb-14">
           {cards.map((c, i) => (
             <button
               key={c.type}
@@ -965,10 +972,10 @@ function IntelligenceSection() {
             transition={{ duration: 0.3 }}
             className="max-w-5xl mx-auto"
           >
-            <div className={`p-8 sm:p-12 rounded-3xl border-2 ${active.activeBorder} ${active.activeBg} shadow-xl`}>
+            <div className={`p-8 sm:p-10 rounded-2xl border-2 ${active.activeBorder} ${active.activeBg} shadow-xl`}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                 <div>
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${active.gradient} flex items-center justify-center text-white mb-5 shadow-lg`}>
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${active.gradient} flex items-center justify-center text-white mb-6 shadow-lg`}>
                     <active.icon className="w-7 h-7" />
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-extrabold text-surface-900 mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
@@ -980,8 +987,8 @@ function IntelligenceSection() {
 
                 <div className="space-y-3.5">
                   {active.features.map((f) => (
-                    <div key={f} className="flex items-center gap-3.5 p-4 rounded-2xl bg-white border border-surface-200/80 shadow-sm">
-                      <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${active.gradient} flex items-center justify-center text-white flex-shrink-0 shadow-sm`}>
+                    <div key={f} className="flex items-center gap-3.5 p-4 rounded-xl bg-white border border-surface-200/80 shadow-sm">
+                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${active.gradient} flex items-center justify-center text-white flex-shrink-0 shadow-sm`}>
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                       <span className="text-xs sm:text-sm font-bold text-surface-800">{f}</span>
@@ -1010,14 +1017,15 @@ function ImpactSection() {
   ];
 
   return (
-    <section id="impact" className="relative py-24 sm:py-32 lg:py-36 bg-surface-950 text-white overflow-hidden">
+    <section id="impact" className="relative py-24 lg:py-28 bg-surface-950 text-white overflow-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
+        {/* Section Header: Badge -> 24px -> Title -> 56px -> Content */}
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-secondary-400 text-xs font-bold uppercase tracking-widest mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-secondary-400 text-xs font-bold uppercase tracking-widest mb-6"
           >
             <Target className="w-3.5 h-3.5" />
             Measurable Impact
@@ -1031,6 +1039,7 @@ function ImpactSection() {
           </motion.h2>
         </div>
 
+        {/* Pillars Grid: 4-col desktop, 2-col tablet, 1-col mobile, p-8, rounded-2xl */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {pillars.map((p, i) => (
             <motion.div
@@ -1040,10 +1049,10 @@ function ImpactSection() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeUp}
-              className="p-7 sm:p-8 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md flex flex-col justify-between h-full"
+              className="p-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md flex flex-col justify-between h-full"
             >
               <div>
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${p.gradient} flex items-center justify-center text-white mb-6 shadow-lg`}>
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${p.gradient} flex items-center justify-center text-white mb-6 shadow-lg`}>
                   <p.icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
@@ -1079,13 +1088,14 @@ function RoadmapSection() {
   ];
 
   return (
-    <section id="roadmap" className="relative py-24 sm:py-32 lg:py-36 bg-white border-t border-surface-200/60 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="roadmap" className="relative py-24 lg:py-28 bg-white border-t border-surface-200/60 overflow-hidden">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12">
         
-        <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+        {/* Section Header: Badge -> 24px -> Title -> 56px -> Content */}
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 text-xs font-bold uppercase tracking-widest mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 text-xs font-bold uppercase tracking-widest mb-6"
           >
             <Globe className="w-3.5 h-3.5" />
             Strategic Roadmap
@@ -1108,7 +1118,7 @@ function RoadmapSection() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeUp}
-              className={`p-6 sm:p-8 rounded-3xl border transition-all duration-300 ${
+              className={`p-8 rounded-2xl border transition-all duration-300 ${
                 s.active
                   ? 'bg-primary-50/60 border-primary-300 shadow-md'
                   : 'bg-white border-surface-200 hover:border-surface-300'
@@ -1143,9 +1153,9 @@ function RoadmapSection() {
    ═══════════════════════════════════════════ */
 function CTASection({ onOpenDemo }: { onOpenDemo: () => void }) {
   return (
-    <section className="relative py-24 sm:py-32 lg:py-36 bg-gradient-to-b from-[#020617] via-[#091126] to-[#030712] overflow-hidden text-center text-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 25 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+    <section className="relative py-24 lg:py-28 bg-gradient-to-b from-[#020617] via-[#091126] to-[#030712] overflow-hidden text-center text-white">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
+        <motion.div initial={{ opacity: 0, y: 25 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-4xl mx-auto">
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
             Build environmental resilience{' '}
             <br />
@@ -1186,7 +1196,7 @@ function CTASection({ onOpenDemo }: { onOpenDemo: () => void }) {
 function Footer() {
   return (
     <footer className="bg-[#020617] text-white/50 py-12 border-t border-white/10 text-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white shadow-md">
             <Shield className="w-4 h-4" />
@@ -1222,7 +1232,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative w-full max-w-4xl bg-surface-950 border border-white/15 rounded-3xl shadow-2xl overflow-hidden text-white"
+        className="relative w-full max-w-4xl bg-surface-950 border border-white/15 rounded-2xl shadow-2xl overflow-hidden text-white"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02]">
@@ -1303,3 +1313,4 @@ export default function LandingPage() {
     </main>
   );
 }
+

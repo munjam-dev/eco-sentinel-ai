@@ -8,6 +8,8 @@ from app.services.sensor_service import SensorService
 router = APIRouter()
 
 
+@router.post("", response_model=ResponseEnvelope[SensorDataResponse])
+@router.post("/", response_model=ResponseEnvelope[SensorDataResponse])
 @router.post("/ingest", response_model=ResponseEnvelope[SensorDataResponse])
 async def ingest_sensor_data(payload: SensorDataIngest, db: AsyncSession = Depends(get_db)):
     """Ingest live ESP32 telemetry, run AI inference, update node health, and trigger WebSocket broadcasts."""

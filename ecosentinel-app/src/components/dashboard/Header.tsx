@@ -23,6 +23,8 @@ export default function Header() {
   const { sidebarOpen, searchQuery, setSearchQuery, toggleSidebar } = useAppStore();
   const [currentTime, setCurrentTime] = useState('');
   const [currentDate, setCurrentDate] = useState('');
+  const [temperature, setTemperature] = useState<number | null>(null);
+  const [humidity, setHumidity] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -34,6 +36,25 @@ export default function Header() {
     };
     tick();
     const interval = setInterval(tick, 1000);
+
+    // Fetch live Open-Meteo weather
+    const fetchWeather = async () => {
+      try {
+        const weatherUrl = process.env.NEXT_PUBLIC_WEATHER_API_URL || "https://api.open-meteo.com/v1/forecast?latitude=22&longitude=79&current=temperature_2m,relative_humidity_2m";
+        const res = await fetch(weatherUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.current) {
+            setTemperature(Math.round(data.current.temperature_2m));
+            setHumidity(Math.round(data.current.relative_humidity_2m));
+          }
+        }
+      } catch (err) {
+        setTemperature(28);
+      }
+    };
+    fetchWeather();
+
     return () => clearInterval(interval);
   }, []);
 
@@ -90,9 +111,14 @@ export default function Header() {
       {/* Right: Status + Actions */}
       <div className="flex items-center gap-2 lg:gap-3">
         {/* Weather */}
-        <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-50 border border-surface-100">
+        <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-50 border border-surface-100" title={humidity ? `Relative Humidity: ${humidity}%` : 'Atmospheric Live Reading'}>
           <CloudSun className="w-4 h-4 text-warning-500" />
-          <span className="text-xs text-surface-600 font-medium">28°C</span>
+          <span className="text-xs text-surface-600 font-medium">
+            {temperature !== null ? `${temperature}°C` : '28°C'}
+          </span>
+          {humidity !== null && (
+            <span className="text-[10px] text-surface-400 font-mono">({humidity}%)</span>
+          )}
         </div>
 
         {/* System Status */}

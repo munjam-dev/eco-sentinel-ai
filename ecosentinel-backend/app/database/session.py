@@ -4,14 +4,20 @@ from sqlalchemy.orm import declarative_base
 from app.core.config import settings
 from app.core.logging import logger
 
+# Determine connect_args (SSL required for Supabase / remote clouds)
+connect_args = {}
+if "supabase.co" in settings.DATABASE_URL or "pooler.supabase.com" in settings.DATABASE_URL or "ssl" in settings.DATABASE_URL.lower():
+    connect_args["ssl"] = True
+
 # Create Async Engine with connection pooling
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=False,
     future=True,
     pool_pre_ping=True,
-    pool_size=20,
-    max_overflow=10,
+    pool_size=10,
+    max_overflow=5,
+    connect_args=connect_args,
 )
 
 # Async Session Factory

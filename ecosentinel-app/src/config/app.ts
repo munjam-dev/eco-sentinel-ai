@@ -12,15 +12,18 @@ export const APP_CONFIG = {
   apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   wsUrl: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/api/v1/ws/live',
   
-  // Map defaults
+  // Map defaults (OpenLibre / OpenStreetMap / Carto — 100% Free, No API Key Required)
   map: {
     center: { lat: 20.5937, lng: 78.9629 }, // India center
     zoom: 5,
     maxZoom: 18,
     minZoom: 3,
     tileUrl: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    tileAttribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    osmTileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    openLibreTileUrl: 'https://tiles.openfreemap.org/styles/positron/{z}/{x}/{y}.png',
     darkTileUrl: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    terrainTileUrl: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    tileAttribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a> &copy; <a href="https://openfreemap.org">OpenFreeMap</a>',
   },
   
   // Thresholds

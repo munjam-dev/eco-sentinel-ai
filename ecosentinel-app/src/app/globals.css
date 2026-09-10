@@ -93,6 +93,17 @@
   --duration-fast: 150ms;
   --duration-normal: 250ms;
   --duration-slow: 400ms;
+
+  /* Spacing Scale (8-point system) */
+  --space-8: 8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-56: 56px;
+  --space-64: 64px;
+  --space-96: 96px;
+  --space-120: 120px;
 }
 
 @theme {
@@ -231,7 +242,7 @@ code, pre, .font-mono {
   background: white;
   border: 1px solid var(--color-surface-200);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: var(--space-32);
   box-shadow: var(--shadow-sm);
   transition: all var(--duration-normal) var(--ease-smooth);
 }
@@ -723,12 +734,12 @@ code, pre, .font-mono {
 .eco-grid-dashboard {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  gap: var(--space-24);
 }
 
 @media (max-width: 768px) {
   .eco-card {
-    padding: 18px;
+    padding: var(--space-24);
     border-radius: var(--radius-md);
   }
 }

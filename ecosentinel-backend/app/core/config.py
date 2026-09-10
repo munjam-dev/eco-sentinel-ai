@@ -23,6 +23,17 @@ class Settings(BaseSettings):
         "https://ecosentinel-app.vercel.app",
     ]
 
+    # Supabase Integration
+    SUPABASE_URL: str = "https://bgeobskxeggfyhenkgjn.supabase.co"
+    SUPABASE_ANON_KEY: str = ""
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+
+    # Groq AI LLM Engine
+    GROQ_API_KEY: str = ""
+
+    # Open-Meteo Weather Forecast API
+    WEATHER_FORECAST_URL: str = "https://api.open-meteo.com/v1/forecast?latitude=22&longitude=79&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,weather_code,rain_sum&hourly=temperature_2m,rain,wind_speed_80m,cloud_cover,visibility&current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m,surface_pressure&timezone=Asia%2FSingapore&forecast_days=16"
+
     # Telemetry Settings
     DATA_RETENTION_DAYS: int = 90
     LORA_GATEWAY_SECRET: str = "lora_gateway_auth_token_998877"
