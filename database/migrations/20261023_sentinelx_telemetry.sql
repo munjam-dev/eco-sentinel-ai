@@ -18,6 +18,7 @@ ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS gps_latitude DOUBLE PRECISION;
 ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS gps_longitude DOUBLE PRECISION;
 ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS gps_fix_valid BOOLEAN;
 ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS sequence_number INTEGER;
+ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS boot_id VARCHAR(24);
 COMMIT;
 
 -- Rollback (manual, only if no data in these columns needs preserving):
@@ -27,4 +28,4 @@ COMMIT;
 --   DROP COLUMN IF EXISTS mq2_digital_alarm, DROP COLUMN IF EXISTS mq2_units,
 --   DROP COLUMN IF EXISTS battery_voltage, DROP COLUMN IF EXISTS rssi, DROP COLUMN IF EXISTS protocol,
 --   DROP COLUMN IF EXISTS firmware_version, DROP COLUMN IF EXISTS gps_latitude,
---   DROP COLUMN IF EXISTS gps_longitude, DROP COLUMN IF EXISTS gps_fix_valid, DROP COLUMN IF EXISTS sequence_number;
+--   DROP COLUMN IF EXISTS gps_longitude, DROP COLUMN IF EXISTS gps_fix_valid, DROP COLUMN IF EXISTS sequence_number, DROP COLUMN IF EXISTS boot_id;
