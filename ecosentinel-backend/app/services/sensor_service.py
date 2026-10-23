@@ -27,7 +27,9 @@ class SensorService:
     async def ingest_telemetry(self, payload: SensorDataIngest) -> SensorData:
         # 1. Fetch Node
         node = await self.node_repo.get_by_node_id(payload.node_id)
-        disaster_type = node.disaster_type if node else "flood"
+        # Prefer the registered node configuration; for an unregistered prototype
+        # node, honor the incoming type instead of silently classifying every node as flood.
+        disaster_type = node.disaster_type if node else (payload.type.lower() if payload.type else "flood")
 
         # 2. Extract telemetry dictionary
         telemetry_dict = payload.model_dump()
@@ -49,12 +51,30 @@ class SensorService:
             rain_rate=payload.rain_rate,
             temperature=payload.temperature,
             humidity=payload.humidity,
+            pressure_hpa=payload.pressure_hpa,
+            rain_raw=payload.rain_raw,
+            rain_detected=payload.rain_detected if payload.rain_detected is not None else (payload.rain if isinstance(payload.rain, bool) else None),
+            water_sensor_valid=payload.water_sensor_valid,
+            climate_sensor_valid=payload.climate_sensor_valid,
             mq2_smoke=payload.mq2_smoke,
             mq135_air_quality=payload.mq135_air_quality,
+            mq2_raw=payload.mq2_raw,
+            mq2_digital_alarm=payload.mq2_digital_alarm,
+            mq2_units=payload.mq2_units,
             flame_detected=payload.flame_detected,
             pm25=payload.pm25,
             pm10=payload.pm10,
             co2_level=payload.co2_level,
+            battery_level=payload.battery_level,
+            battery_voltage=payload.battery_voltage,
+            rssi=payload.rssi,
+            protocol=payload.protocol,
+            firmware_version=payload.firmware_version,
+            gps_latitude=payload.gps_latitude,
+            gps_longitude=payload.gps_longitude,
+            gps_fix_valid=payload.gps_fix_valid,
+            sequence_number=payload.sequence_number,
+            boot_id=payload.boot_id,
             calculated_risk_score=risk_score,
         )
         saved_sensor = await self.sensor_repo.create(sensor_obj)
