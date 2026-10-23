@@ -94,9 +94,9 @@ static bool sendTelemetry(const FireReading &r, const char *risk) {
   StaticJsonDocument<384> doc;
   doc["nodeId"] = "NODE-02";
   doc["type"] = "FIRE";
-  // Keep legacy field for compatibility, but it is an ADC-derived indicator,
-  // not calibrated ppm. Use mq2Raw for unambiguous future schema migration.
-  doc["mq2"] = r.mq2Raw;
+  // Never put ADC counts in the legacy mq2 concentration field.
+  // This prevents the backend from treating raw counts as calibrated ppm.
+  doc["mq2"] = nullptr;
   doc["mq2Raw"] = r.mq2Raw;
   doc["mq2DigitalAlarm"] = r.mq2DigitalAlarm;
   doc["flame"] = r.flameDetected ? 1 : 0;
