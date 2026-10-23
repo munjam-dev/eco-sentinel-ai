@@ -27,7 +27,9 @@ class SensorService:
     async def ingest_telemetry(self, payload: SensorDataIngest) -> SensorData:
         # 1. Fetch Node
         node = await self.node_repo.get_by_node_id(payload.node_id)
-        disaster_type = node.disaster_type if node else "flood"
+        # Prefer the registered node configuration; for an unregistered prototype
+        # node, honor the incoming type instead of silently classifying every node as flood.
+        disaster_type = node.disaster_type if node else (payload.type.lower() if payload.type else "flood")
 
         # 2. Extract telemetry dictionary
         telemetry_dict = payload.model_dump()
