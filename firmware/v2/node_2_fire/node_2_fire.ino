@@ -31,6 +31,8 @@ static constexpr int MQ2_HIGH_RAW = 2500;  // Bench starting point only; tune af
 static constexpr bool FLAME_ACTIVE_LOW = true;
 
 uint32_t lastSampleMs = 0;
+uint32_t telemetrySequence = 0;
+String bootId;
 uint32_t lastWifiAttemptMs = 0;
 
 struct FireReading {
@@ -105,6 +107,8 @@ static bool sendTelemetry(const FireReading &r, const char *risk) {
   doc["signal"] = r.rssi;
   doc["protocol"] = "wifi";
   doc["firmwareVersion"] = "2.0.0";
+  doc["sequenceNumber"] = telemetrySequence++;
+  doc["bootId"] = bootId;
   doc["mq2Units"] = "adc_raw";
 
   String body;
@@ -119,6 +123,7 @@ static bool sendTelemetry(const FireReading &r, const char *risk) {
 
 void setup() {
   Serial.begin(115200);
+  bootId = String((uint32_t)esp_random(), HEX);
   pinMode(PIN_MQ2_AO, INPUT);
   pinMode(PIN_MQ2_DO, INPUT);
   pinMode(PIN_FLAME_IR, INPUT);
