@@ -179,9 +179,8 @@ static bool sendTelemetry(const FloodReading &r, const char *risk) {
   StaticJsonDocument<512> doc;
   doc["nodeId"] = "NODE-01";
   doc["type"] = "FLOOD";
-  doc["waterLevel"] = r.waterValid ? serialized(String(r.waterLevelCm, 1)) : serialized("null");
-  // Replace the water-level field below with an actual JSON null when invalid.
-  if (!r.waterValid) doc["waterLevel"] = nullptr;
+  if (r.waterValid) doc["waterLevel"] = r.waterLevelCm;
+  else doc["waterLevel"] = nullptr;
   doc["rain"] = r.rain;
   doc["rainRaw"] = r.rainRaw;
   if (r.dhtValid) {
