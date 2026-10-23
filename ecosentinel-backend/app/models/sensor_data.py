@@ -36,6 +36,7 @@ class SensorData(BaseModel):
     gps_longitude = Column(Float, nullable=True)
     gps_fix_valid = Column(Boolean, nullable=True)
     sequence_number = Column(Integer, nullable=True)
+    boot_id = Column(String(24), nullable=True)
 
     # Gas / Particulate Extended
     pm25 = Column(Float, nullable=True)
