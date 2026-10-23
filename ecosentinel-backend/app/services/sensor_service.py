@@ -74,6 +74,7 @@ class SensorService:
             gps_longitude=payload.gps_longitude,
             gps_fix_valid=payload.gps_fix_valid,
             sequence_number=payload.sequence_number,
+            boot_id=payload.boot_id,
             calculated_risk_score=risk_score,
         )
         saved_sensor = await self.sensor_repo.create(sensor_obj)
