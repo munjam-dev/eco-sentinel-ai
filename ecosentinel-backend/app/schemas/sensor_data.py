@@ -13,6 +13,7 @@ class SensorDataIngest(BaseModel):
     firmware_version: Optional[str] = Field(default=None, alias="firmwareVersion")
     protocol: Optional[str] = "wifi"
     sequence_number: Optional[int] = Field(default=None, alias="sequenceNumber", ge=0)
+    boot_id: Optional[str] = Field(default=None, alias="bootId", max_length=24)
 
     # Core sensor metrics
     water_level: Optional[float] = Field(default=None, alias="waterLevel", description="Water level above configured baseline, cm")
@@ -95,6 +96,7 @@ class SensorDataResponse(BaseModel):
     gps_longitude: Optional[float] = None
     gps_fix_valid: Optional[bool] = None
     sequence_number: Optional[int] = None
+    boot_id: Optional[str] = None
     calculated_risk_score: Optional[float] = None
     created_at: datetime
 
