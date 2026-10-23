@@ -54,7 +54,7 @@ export default function SentinelXLivePage() {
   const [nodes, setNodes] = useState<Record<string, NodeSnapshot>>({});
   const [connectionMessage, setConnectionMessage] = useState('Connecting to the live telemetry feed…');
   const [feedError, setFeedError] = useState<string | null>(null);
-  const [clock, setClock] = useState(Date.now());
+  const [clock, setClock] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => setClock(Date.now()), 5000);
@@ -198,7 +198,7 @@ export default function SentinelXLivePage() {
           ) : (
             <div className="grid gap-4 xl:grid-cols-2">
               {sortedNodes.map((node) => {
-                const stale = Date.now() - node.receivedAt >= 20000;
+                const stale = now - node.receivedAt >= 20000;
                 const t = node.telemetry;
                 const flood = node.type.toUpperCase().includes('FLOOD');
                 const mq2Raw = valueOf(t, 'mq2_raw', 'mq2Raw');
