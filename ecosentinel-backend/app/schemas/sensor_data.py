@@ -33,7 +33,7 @@ class SensorDataIngest(BaseModel):
     mq2_digital_alarm: Optional[bool] = Field(default=None, alias="mq2DigitalAlarm")
     mq2_units: Optional[str] = Field(default=None, alias="mq2Units", max_length=24)
     mq135_air_quality: Optional[float] = Field(default=None, alias="mq135")
-    flame_detected: Optional[float] = Field(default=0.0, alias="flame", description="Flame sensor state 0/1")
+    flame_detected: Optional[float] = Field(default=None, alias="flame", description="Flame sensor state 0/1; absent means unknown")
 
     # Extended telemetry
     pm25: Optional[float] = None
