@@ -54,6 +54,12 @@ export default function SentinelXLivePage() {
   const [nodes, setNodes] = useState<Record<string, NodeSnapshot>>({});
   const [connectionMessage, setConnectionMessage] = useState('Connecting to the live telemetry feed…');
   const [feedError, setFeedError] = useState<string | null>(null);
+  const [clock, setClock] = useState(Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setClock(Date.now()), 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     let socket: WebSocket | null = null;
@@ -125,7 +131,7 @@ export default function SentinelXLivePage() {
   }, []);
 
   const sortedNodes = useMemo(() => Object.values(nodes).sort((a, b) => b.receivedAt - a.receivedAt), [nodes]);
-  const now = Date.now();
+  const now = clock;
   const onlineCount = sortedNodes.filter((node) => now - node.receivedAt < 20000).length;
   const highCount = sortedNodes.filter((node) => ['HIGH', 'CRITICAL'].includes((node.riskCategory ?? '').toUpperCase())).length;
   const lastMessageText = lastMessageAt ? new Date(lastMessageAt).toLocaleTimeString() : 'No messages received yet';
@@ -197,6 +203,8 @@ export default function SentinelXLivePage() {
                 const flood = node.type.toUpperCase().includes('FLOOD');
                 const mq2Raw = valueOf(t, 'mq2_raw', 'mq2Raw');
                 const mq2Concentration = valueOf(t, 'mq2_smoke', 'mq2');
+                const sensorFault = valueOf(t, 'water_sensor_valid', 'waterSensorValid') === false || valueOf(t, 'climate_sensor_valid', 'climateSensorValid') === false;
+                const firmware = valueOf(t, 'firmware_version', 'firmwareVersion');
                 return (
                   <article key={node.nodeId} className="rounded-2xl border border-slate-200 p-5">
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -204,7 +212,7 @@ export default function SentinelXLivePage() {
                         <div className="rounded-xl bg-slate-100 p-3">{flood ? <Droplets className="h-5 w-5 text-sky-700" /> : <Flame className="h-5 w-5 text-orange-700" />}</div>
                         <div><h3 className="font-bold">{node.nodeId}</h3><p className="text-xs uppercase tracking-wide text-slate-500">{node.type}</p></div>
                       </div>
-                      <div className={`rounded-full border px-3 py-1 text-xs font-semibold ${riskColor(node.riskCategory)}`}>{node.riskCategory ?? 'Risk unavailable'}</div>
+                      <div className="flex flex-wrap gap-2"><div className={`rounded-full border px-3 py-1 text-xs font-semibold ${riskColor(node.riskCategory)}`}>{node.riskCategory ?? 'Risk unavailable'}</div>{sensorFault && <div className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">Sensor fault</div>}{stale && <div className="rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">Offline / stale</div>}</div>
                     </div>
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {flood ? <>
@@ -212,6 +220,8 @@ export default function SentinelXLivePage() {
                         <Metric label="Rain detected" value={valueOf(t, 'rain')} />
                         <Metric label="Temperature" value={valueOf(t, 'temperature')} unit=" °C" />
                         <Metric label="Humidity" value={valueOf(t, 'humidity')} unit="%" />
+                        <Metric label="Pressure (BME280)" value={valueOf(t, 'pressure_hpa', 'pressureHpa')} unit=" hPa" />
+                        <Metric label="Climate sensor valid" value={valueOf(t, 'climate_sensor_valid', 'climateSensorValid')} />
                         <Metric label="Water sensor" value={valueOf(t, 'water_sensor_valid', 'waterSensorValid')} />
                         <Metric label="Rain ADC" value={valueOf(t, 'rain_raw', 'rainRaw')} />
                       </> : <>
@@ -221,11 +231,13 @@ export default function SentinelXLivePage() {
                         <Metric label="MQ-2 digital alarm" value={valueOf(t, 'mq2_digital_alarm', 'mq2DigitalAlarm')} />
                       </>}
                       <Metric label="Battery estimate" value={valueOf(t, 'battery_level', 'battery')} unit="%" />
+                      <Metric label="Battery voltage" value={valueOf(t, 'battery_voltage', 'batteryVoltage')} unit=" V" />
                       <Metric label="Wi-Fi RSSI" value={valueOf(t, 'rssi', 'signal')} unit=" dBm" />
                     </div>
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-xs text-slate-500">
                       <span>{stale ? 'STALE — no packet in 20 seconds' : 'Recent telemetry'}</span>
                       <span>Received {new Date(node.receivedAt).toLocaleTimeString()}</span>
+                      <span>Firmware {display(firmware)}</span>
                     </div>
                   </article>
                 );
