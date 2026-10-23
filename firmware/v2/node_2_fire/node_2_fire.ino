@@ -40,15 +40,16 @@ struct FireReading {
   bool mq2DigitalAlarm;
   bool flameDetected;
   int batteryPct;
+  float batteryVoltage;
   int rssi;
 };
 
-static int readBatteryPercent() {
+static float readBatteryVoltage() {
   // Assumes a 1:1 divider. Recalculate for the actual circuit before use.
   const int raw = analogRead(PIN_BATTERY_ADC);
   const float pinV = (raw / 4095.0f) * 3.3f;
   const float batteryV = pinV * 2.0f;
-  return constrain((int)lroundf((batteryV - 3.2f) * 100.0f), 0, 100);
+  return batteryV;
 }
 
 static FireReading readSensors() {
@@ -57,7 +58,8 @@ static FireReading readSensors() {
   r.mq2DigitalAlarm = digitalRead(PIN_MQ2_DO) == LOW;
   const int flameRaw = digitalRead(PIN_FLAME_IR);
   r.flameDetected = FLAME_ACTIVE_LOW ? flameRaw == LOW : flameRaw == HIGH;
-  r.batteryPct = readBatteryPercent();
+  r.batteryVoltage = readBatteryVoltage();
+  r.batteryPct = constrain((int)lroundf((r.batteryVoltage - 3.2f) * 100.0f), 0, 100);
   r.rssi = WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : -99;
   return r;
 }
@@ -104,6 +106,7 @@ static bool sendTelemetry(const FireReading &r, const char *risk) {
   doc["flame"] = r.flameDetected ? 1 : 0;
   doc["risk"] = risk;
   doc["battery"] = r.batteryPct;
+  doc["batteryVoltage"] = r.batteryVoltage;
   doc["signal"] = r.rssi;
   doc["protocol"] = "wifi";
   doc["firmwareVersion"] = "2.0.0";
