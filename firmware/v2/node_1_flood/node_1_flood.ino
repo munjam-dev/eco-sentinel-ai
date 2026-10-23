@@ -63,6 +63,8 @@ struct FloodReading {
 };
 
 uint32_t lastSampleMs = 0;
+uint32_t telemetrySequence = 0;
+String bootId;
 uint32_t lastWifiAttemptMs = 0;
 bool highRiskLatched = false;
 
@@ -216,6 +218,8 @@ static bool sendTelemetry(const FloodReading &r, const char *risk) {
   doc["signal"] = r.rssi;
   doc["protocol"] = "wifi";
   doc["firmwareVersion"] = "2.0.0";
+  doc["sequenceNumber"] = telemetrySequence++;
+  doc["bootId"] = bootId;
   doc["waterSensorValid"] = r.waterValid;
   doc["climateSensorValid"] = r.climateValid;
 
@@ -231,6 +235,7 @@ static bool sendTelemetry(const FloodReading &r, const char *risk) {
 
 void setup() {
   Serial.begin(115200);
+  bootId = String((uint32_t)esp_random(), HEX);
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECHO, INPUT);
   pinMode(PIN_RAIN_DO, INPUT);
