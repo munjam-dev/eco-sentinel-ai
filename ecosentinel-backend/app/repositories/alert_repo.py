@@ -19,6 +19,21 @@ class AlertRepository(BaseRepository[Alert]):
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
+    async def get_open_for_node_type(self, node_id: str, hazard_type: str) -> Optional[Alert]:
+        query = (
+            select(Alert)
+            .where(
+                Alert.node_id == node_id,
+                Alert.type == hazard_type,
+                Alert.status.in_(["active", "acknowledged"]),
+                Alert.is_deleted == False,
+            )
+            .order_by(Alert.timestamp.desc())
+            .limit(1)
+        )
+        result = await self.db.execute(query)
+        return result.scalars().first()
+
     async def get_by_alert_id(self, alert_id: str) -> Optional[Alert]:
         query = select(Alert).where(Alert.alert_id == alert_id, Alert.is_deleted == False)
         result = await self.db.execute(query)
