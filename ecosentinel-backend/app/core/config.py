@@ -1,14 +1,14 @@
 import os
 from typing import List, Union
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import AnyHttpUrl, field_validator
+from pydantic import AnyHttpUrl, field_validator, model_validator
 
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "EcoSentinel AI Backend"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str = "production_super_secret_jwt_key_change_me_in_prod"
+    SECRET_KEY: str = "development-only-change-me"
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
 
@@ -36,12 +36,23 @@ class Settings(BaseSettings):
 
     # Telemetry Settings
     DATA_RETENTION_DAYS: int = 90
-    LORA_GATEWAY_SECRET: str = "lora_gateway_auth_token_998877"
+    LORA_GATEWAY_SECRET: str = ""
 
     # Emergency Alert Threshold Defaults
     THRESHOLD_TEMP_CRITICAL: float = 45.0
     THRESHOLD_WATER_CRITICAL: float = 5.0
     THRESHOLD_PM25_CRITICAL: float = 150.0
+
+    @model_validator(mode="after")
+    def validate_production_secrets(self):
+        if self.ENVIRONMENT.lower() == "production":
+            if self.DEBUG:
+                raise ValueError("DEBUG must be false in production")
+            if not self.SECRET_KEY or self.SECRET_KEY == "development-only-change-me":
+                raise ValueError("Set a strong SECRET_KEY through the environment in production")
+            if not self.LORA_GATEWAY_SECRET:
+                raise ValueError("Set LORA_GATEWAY_SECRET through the environment in production")
+        return self
 
     model_config = SettingsConfigDict(
         env_file=".env",
