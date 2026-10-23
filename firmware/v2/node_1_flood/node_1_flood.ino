@@ -4,8 +4,9 @@
  *
  * Required libraries:
  * - ArduinoJson 6.x
- * - Adafruit DHT sensor library
+ * - Adafruit BME280 Library
  * - Adafruit Unified Sensor
+ * - Adafruit DHT sensor library (optional fallback)
  * - LiquidCrystal_I2C compatible with your installed LCD backpack
  *
  * IMPORTANT: HC-SR04 Echo must be level-shifted to 3.3 V.
@@ -17,6 +18,7 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <DHT.h>
+#include <Adafruit_BME280.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <ArduinoOTA.h>
@@ -38,8 +40,12 @@ static constexpr float SENSOR_HEIGHT_CM = 100.0f;
 static constexpr uint32_t SENSOR_INTERVAL_MS = 3000;
 static constexpr uint32_t WIFI_RETRY_MS = 10000;
 static constexpr uint16_t RAIN_ADC_THRESHOLD = 2500;
+static constexpr uint8_t BME280_ADDRESS_PRIMARY = 0x76;
+static constexpr uint8_t BME280_ADDRESS_SECONDARY = 0x77;
 
 DHT dht(PIN_DHT, DHTTYPE);
+Adafruit_BME280 bme;
+bool bmeAvailable = false;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 struct FloodReading {
@@ -49,7 +55,9 @@ struct FloodReading {
   int rainRaw;
   float temperatureC;
   float humidityPct;
-  bool dhtValid;
+  float pressureHpa;
+  bool climateValid;
+  bool climateFromBme;
   int batteryPct;
   int rssi;
 };
@@ -98,15 +106,27 @@ static FloodReading readSensors() {
   r.rainRaw = analogRead(PIN_RAIN_AO);
   r.rain = (digitalRead(PIN_RAIN_DO) == LOW) || (r.rainRaw < RAIN_ADC_THRESHOLD);
 
-  r.temperatureC = dht.readTemperature();
-  r.humidityPct = dht.readHumidity();
-  r.dhtValid = isfinite(r.temperatureC) && isfinite(r.humidityPct)
-    && r.temperatureC >= -10.0f && r.temperatureC <= 80.0f
-    && r.humidityPct >= 0.0f && r.humidityPct <= 100.0f;
+  if (bmeAvailable) {
+    r.temperatureC = bme.readTemperature();
+    r.humidityPct = bme.readHumidity();
+    r.pressureHpa = bme.readPressure() / 100.0f;
+    r.climateFromBme = true;
+  } else {
+    // DHT11 fallback remains available when the BME280 is absent.
+    r.temperatureC = dht.readTemperature();
+    r.humidityPct = dht.readHumidity();
+    r.pressureHpa = NAN;
+    r.climateFromBme = false;
+  }
+  r.climateValid = isfinite(r.temperatureC) && isfinite(r.humidityPct)
+    && r.temperatureC >= -40.0f && r.temperatureC <= 85.0f
+    && r.humidityPct >= 0.0f && r.humidityPct <= 100.0f
+    && (!r.climateFromBme || (isfinite(r.pressureHpa) && r.pressureHpa >= 300.0f && r.pressureHpa <= 1200.0f));
 
-  if (!r.dhtValid) {
+  if (!r.climateValid) {
     r.temperatureC = NAN;
     r.humidityPct = NAN;
+    r.pressureHpa = NAN;
   }
 
   r.batteryPct = readBatteryPercent();
@@ -118,7 +138,7 @@ static const char* riskFor(const FloodReading &r) {
   if (!r.waterValid) return "SENSOR_FAULT";
   if (r.waterLevelCm >= FLOOD_WATER_LEVEL_HIGH_CM) return "HIGH";
   if (r.waterLevelCm >= FLOOD_WATER_LEVEL_MED_CM && r.rain) return "HIGH";
-  if (r.waterLevelCm >= FLOOD_WATER_LEVEL_MED_CM || (r.rain && r.dhtValid && r.humidityPct >= 85.0f)) return "MEDIUM";
+  if (r.waterLevelCm >= FLOOD_WATER_LEVEL_MED_CM || (r.rain && r.climateValid && r.humidityPct >= 85.0f)) return "MEDIUM";
   return "LOW";
 }
 
@@ -183,9 +203,10 @@ static bool sendTelemetry(const FloodReading &r, const char *risk) {
   else doc["waterLevel"] = nullptr;
   doc["rain"] = r.rain;
   doc["rainRaw"] = r.rainRaw;
-  if (r.dhtValid) {
+  if (r.climateValid) {
     doc["temperature"] = r.temperatureC;
     doc["humidity"] = r.humidityPct;
+    if (r.climateFromBme && isfinite(r.pressureHpa)) doc["pressureHpa"] = r.pressureHpa;
   } else {
     doc["temperature"] = nullptr;
     doc["humidity"] = nullptr;
@@ -196,7 +217,7 @@ static bool sendTelemetry(const FloodReading &r, const char *risk) {
   doc["protocol"] = "wifi";
   doc["firmwareVersion"] = "2.0.0";
   doc["waterSensorValid"] = r.waterValid;
-  doc["climateSensorValid"] = r.dhtValid;
+  doc["climateSensorValid"] = r.climateValid;
 
   String body;
   serializeJson(doc, body);
@@ -222,6 +243,10 @@ void setup() {
   analogReadResolution(12);
   dht.begin();
   Wire.begin(21, 22);
+  // BME280 shares I2C with the LCD. Address depends on the module SDO strap.
+  bmeAvailable = bme.begin(BME280_ADDRESS_PRIMARY, &Wire);
+  if (!bmeAvailable) bmeAvailable = bme.begin(BME280_ADDRESS_SECONDARY, &Wire);
+  Serial.printf("BME280: %s; climate source=%s\\n", bmeAvailable ? "found" : "not found", bmeAvailable ? "BME280" : "DHT11 fallback");
   lcd.init();
   lcd.backlight();
   lcd.print("EcoSentinel 2.0");
