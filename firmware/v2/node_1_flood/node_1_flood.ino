@@ -9,7 +9,7 @@
  * - Adafruit DHT sensor library (optional fallback)
  * - LiquidCrystal_I2C compatible with your installed LCD backpack
  *
- * IMPORTANT: HC-SR04 Echo must be level-shifted to 3.3 V.
+ * IMPORTANT: JSN-SR04T Echo must be level-shifted to 3.3 V. Verify the exact module version.
  * Configure SENSOR_HEIGHT_CM to the actual installation height.
  */
 
@@ -59,6 +59,7 @@ struct FloodReading {
   bool climateValid;
   bool climateFromBme;
   int batteryPct;
+  float batteryVoltage;
   int rssi;
 };
 
@@ -92,14 +93,13 @@ static float readWaterLevelCm(bool &valid) {
   return max(0.0f, SENSOR_HEIGHT_CM - distanceCm);
 }
 
-static int readBatteryPercent() {
+static float readBatteryVoltage() {
   // Assumes a 1:1 divider and a correctly wired battery measurement circuit.
   // Recalculate this for the actual divider and battery chemistry before use.
   const int raw = analogRead(PIN_BATTERY_ADC);
   const float pinV = (raw / 4095.0f) * 3.3f;
   const float batteryV = pinV * 2.0f;
-  const int pct = (int)lroundf((batteryV - 3.2f) * 100.0f);
-  return constrain(pct, 0, 100);
+  return batteryV;
 }
 
 static FloodReading readSensors() {
@@ -131,7 +131,8 @@ static FloodReading readSensors() {
     r.pressureHpa = NAN;
   }
 
-  r.batteryPct = readBatteryPercent();
+  r.batteryVoltage = readBatteryVoltage();
+  r.batteryPct = constrain((int)lroundf((r.batteryVoltage - 3.2f) * 100.0f), 0, 100);
   r.rssi = WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : -99;
   return r;
 }
@@ -215,6 +216,7 @@ static bool sendTelemetry(const FloodReading &r, const char *risk) {
   }
   doc["risk"] = risk;
   doc["battery"] = r.batteryPct;
+  doc["batteryVoltage"] = r.batteryVoltage;
   doc["signal"] = r.rssi;
   doc["protocol"] = "wifi";
   doc["firmwareVersion"] = "2.0.0";
