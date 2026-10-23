@@ -9,37 +9,51 @@ class SensorDataIngest(BaseModel):
 
     # Node metadata
     type: Optional[str] = Field(default=None, description="Disaster type: FLOOD, FIRE, AIR")
-    risk: Optional[str] = Field(default=None, description="Risk level: LOW, MEDIUM, HIGH, CRITICAL")
+    risk: Optional[str] = Field(default=None, description="Edge-computed advisory risk level")
+    firmware_version: Optional[str] = Field(default=None, alias="firmwareVersion")
+    protocol: Optional[str] = "wifi"  # wifi, lora
 
     # Core sensor metrics
-    water_level: Optional[float] = Field(default=None, alias="waterLevel", description="Water depth / level")
-    rain: Optional[Union[bool, float]] = Field(default=None, description="Rain detection flag / value")
-    rain_rate: Optional[float] = Field(default=None, alias="rainRate", description="Rain intensity mm/hr")
+    water_level: Optional[float] = Field(default=None, alias="waterLevel", description="Water level above configured baseline, cm")
+    rain: Optional[Union[bool, float]] = None
+    rain_rate: Optional[float] = Field(default=None, alias="rainRate", description="Calibrated rain intensity mm/hr, if available")
+    rain_raw: Optional[int] = Field(default=None, alias="rainRaw")
     temperature: Optional[float] = Field(default=None, description="Ambient temperature °C")
     humidity: Optional[float] = Field(default=None, description="Relative humidity %")
-    mq2_smoke: Optional[float] = Field(default=None, alias="mq2", description="Combustion gas / smoke PPM")
-    mq135_air_quality: Optional[float] = Field(default=None, alias="mq135", description="Gas quality index PPM")
-    flame_detected: Optional[float] = Field(default=0.0, alias="flame", description="Flame IR sensor binary 0/1")
+    water_sensor_valid: Optional[bool] = Field(default=None, alias="waterSensorValid")
+    climate_sensor_valid: Optional[bool] = Field(default=None, alias="climateSensorValid")
+
+    # Gas / air metrics. mq2 is reserved for a calibrated concentration only.
+    mq2_smoke: Optional[float] = Field(default=None, alias="mq2", description="Calibrated MQ-2 concentration only; do not send ADC counts here")
+    mq2_raw: Optional[int] = Field(default=None, alias="mq2Raw", description="Raw MQ-2 ADC count; not ppm")
+    mq2_digital_alarm: Optional[bool] = Field(default=None, alias="mq2DigitalAlarm")
+    mq2_units: Optional[str] = Field(default=None, alias="mq2Units")
+    mq135_air_quality: Optional[float] = Field(default=None, alias="mq135")
+    flame_detected: Optional[float] = Field(default=0.0, alias="flame", description="Flame sensor state 0/1")
 
     # Extended telemetry
     pm25: Optional[float] = None
     pm10: Optional[float] = None
     co2_level: Optional[float] = Field(default=None, alias="co2")
 
-    # Transmission diagnostic metrics
+    # Transmission diagnostics
     battery_level: Optional[float] = Field(default=100.0, alias="battery")
     rssi: Optional[int] = Field(default=-65, alias="signal")
-    protocol: Optional[str] = "wifi" # wifi, lora
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, extra="ignore")
 
     @model_validator(mode="before")
     @classmethod
-    def normalize_aliases(cls, data: dict):
+    def normalize_aliases(cls, data):
         if isinstance(data, dict):
-            # Normalize rain boolean to rain_rate / float
-            if "rain" in data and isinstance(data["rain"], bool):
-                data["rain_rate"] = 25.0 if data["rain"] else 0.0
+            data = dict(data)
+            # Legacy firmware sends a Boolean rain flag. Preserve the flag and
+            # derive a rough presence indicator only; this is not mm/hour.
+            if isinstance(data.get("rain"), bool):
+                data.setdefault("rain_rate", 25.0 if data["rain"] else 0.0)
+            # Never reinterpret raw MQ-2 ADC counts as concentration.
+            if data.get("mq2Units") == "adc_raw" and "mq2" in data:
+                data["mq2"] = None
         return data
 
 
