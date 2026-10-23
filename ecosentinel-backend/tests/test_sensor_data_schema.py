@@ -1,6 +1,6 @@
 """Schema contract tests for SentinelX 2.0 telemetry.
 
-Run from ecosentinel-backend with: python -m pytest ../tests/test_sensor_data_schema.py
+Run from ecosentinel-backend with: python -m pytest tests/test_sensor_data_schema.py
 """
 from app.schemas.sensor_data import SensorDataIngest
 
