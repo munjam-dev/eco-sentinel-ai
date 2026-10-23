@@ -29,7 +29,21 @@ class AlertEngine:
         elif risk_score >= 40.0:
             severity = "WARNING"
         else:
-            return None # Low risk, no alert required
+            # Close an open alert after risk falls below the alert threshold.
+            existing = await self.alert_repo.get_open_for_node_type(node_id, hazard_type)
+            if existing:
+                updated = await self.alert_repo.update(existing, {
+                    "status": "resolved",
+                    "resolved_at": datetime.now(timezone.utc),
+                })
+                await ws_manager.broadcast("alert_status_change", {
+                    "alert_id": updated.alert_id,
+                    "node_id": updated.node_id,
+                    "status": "resolved",
+                    "resolved_at": updated.resolved_at.isoformat() if updated.resolved_at else None,
+                })
+                return updated
+            return None  # Low risk and no open alert.
 
         alert_title = f"{severity} {hazard_type.upper()} Hazard Detected"
         alert_msg = f"{explanation} Risk Score: {risk_score:.1f}/100."
